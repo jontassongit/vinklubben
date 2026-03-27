@@ -2,11 +2,10 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, RefreshCw, Image as ImageIcon, ChevronUp, ChevronDown, User, Wine, ExternalLink, Filter, Check, X } from 'lucide-react';
 
 /**
- * VERSION 25:
- * - Multiselect-filter för druvor.
- * - Färgkodning för "Sort": Nu med stöd för Rosé (rosa ton).
- * - Rött, Vitt, Mousserat, Orange och Rosé har alla unika, läsbara färger.
- * - Fullständig textvisning i alla kolumner.
+ * VERSION 27:
+ * - Döljer kolumnen "Bolagslänk".
+ * - Tar bort "/ 5" suffix från alla betygsvisningar.
+ * - Behåller all övrig funktionalitet från tidigare versioner.
  */
 
 const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQv4HdPZVBMfNFSKu0g-9Zv1SneO8Msws73-fq1olVXjpFa2-9p5NXapBGMuSrLPgJ_mIf26pNkSbWT/pub?gid=0&single=true&output=csv";
@@ -157,8 +156,14 @@ const App = () => {
     return headers.filter(h => {
       const name = h.trim();
       const upperName = name.toUpperCase();
-      if (["BILDLÄNK", "AE", "URL", "IMAGE", "BILDER", "BILD"].includes(upperName) || name === "") return false;
+      
+      // Dölj tekniska kolumner och specifikt "Bolagslänk"
+      const hiddenFields = ["BILDLÄNK", "AE", "URL", "IMAGE", "BILDER", "BILD", "BOLAGSLÄNK"];
+      if (hiddenFields.includes(upperName) || name === "") return false;
+      
+      // Dölj om kolumnen innehåller bild-URL:er
       if (data.length > 0 && getCleanImageUrl(data[0][name])) return false;
+      
       for (const [groupKey, colList] of Object.entries(columnGroups)) {
         if (colList.includes(name)) return visibleGroups[groupKey];
       }
@@ -441,11 +446,10 @@ const App = () => {
                               return (
                                 <td key={colIndex} className="px-8 py-6">
                                   {isEmpty ? (
-                                    <span className="text-[10px] italic text-[#D1C7BD] font-medium uppercase tracking-widest">Oprovat</span>
+                                    <span className="text-[10px] italic text-[#D1C7BD] font-medium uppercase tracking-widest">Ej betygsatt</span>
                                   ) : (
                                     <div className="flex items-baseline gap-0.5">
                                       <span className="font-bold text-[#722F37] text-xl">{rawVal}</span>
-                                      <span className="text-[10px] text-[#A69696] font-bold">/ 5</span>
                                     </div>
                                   )}
                                 </td>
