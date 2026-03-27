@@ -12,16 +12,16 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   
-  <!-- Babel (för att koda om React JSX till vanlig JavaScript i webbläsaren) -->
+  <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
-<body>
+<body class="bg-[#FDFCF8] m-0 p-0 overflow-hidden">
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
 
-    // --- Ikoner (ersätter lucide-react så vi slipper bygga projektet) ---
+    // --- Ikoner ---
     const IconBase = ({ size = 24, className = "", children }) => (
       <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         {children}
@@ -30,7 +30,6 @@
 
     const Wine = (props) => <IconBase {...props}><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></IconBase>;
     const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></IconBase>;
-    const RefreshCw = (props) => <IconBase {...props}><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></IconBase>;
     const Filter = (props) => <IconBase {...props}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></IconBase>;
     const ChevronDown = (props) => <IconBase {...props}><path d="m6 9 6 6 6-6"/></IconBase>;
     const ChevronUp = (props) => <IconBase {...props}><path d="m18 15-6-6-6 6"/></IconBase>;
@@ -38,14 +37,6 @@
     const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
     const User = (props) => <IconBase {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
     const ExternalLink = (props) => <IconBase {...props}><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></IconBase>;
-    // ImageIcon exkluderas då den importerades men ej användes i originalkoden.
-
-    /**
-     * VERSION 27:
-     * - Döljer kolumnen "Bolagslänk".
-     * - Tar bort "/ 5" suffix från alla betygsvisningar.
-     * - Behåller all övrig funktionalitet från tidigare versioner.
-     */
 
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQv4HdPZVBMfNFSKu0g-9Zv1SneO8Msws73-fq1olVXjpFa2-9p5NXapBGMuSrLPgJ_mIf26pNkSbWT/pub?gid=0&single=true&output=csv";
 
@@ -196,11 +187,9 @@
           const name = h.trim();
           const upperName = name.toUpperCase();
           
-          // Dölj tekniska kolumner och specifikt "Bolagslänk"
           const hiddenFields = ["BILDLÄNK", "AE", "URL", "IMAGE", "BILDER", "BILD", "BOLAGSLÄNK"];
           if (hiddenFields.includes(upperName) || name === "") return false;
           
-          // Dölj om kolumnen innehåller bild-URL:er
           if (data.length > 0 && getCleanImageUrl(data[0][name])) return false;
           
           for (const [groupKey, colList] of Object.entries(columnGroups)) {
@@ -274,108 +263,110 @@
       };
 
       return (
-        <div className="min-h-screen bg-[#FDFCF8] text-[#2D2424] font-serif">
-          <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#E8E2D9] shadow-sm">
-            <div className="max-w-[1800px] mx-auto px-6 py-4">
-              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="bg-[#722F37] p-3 rounded-full shadow-lg shrink-0">
-                    <Wine className="text-[#FDFCF8]" size={24} />
+        <div className="h-screen h-[100dvh] bg-[#FDFCF8] text-[#2D2424] font-serif flex flex-col overflow-hidden">
+          {/* HEADER SEKTION */}
+          <header className="shrink-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#E8E2D9] shadow-sm">
+            <div className="max-w-[1800px] mx-auto px-4 md:px-6 py-3 md:py-4">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 md:gap-6">
+                
+                {/* Titel & Ikon */}
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="bg-[#722F37] p-2 md:p-3 rounded-full shadow-lg shrink-0">
+                    <Wine className="text-[#FDFCF8] w-5 h-5 md:w-6 md:h-6" />
                   </div>
                   <div>
-                    <h1 className="text-2xl font-semibold text-[#4A3737] tracking-tight">Vinklubbens Register</h1>
-                    <p className="text-xs text-[#8C7A7A] font-medium uppercase mt-1 tracking-widest italic">
+                    <h1 className="text-xl md:text-2xl font-semibold text-[#4A3737] tracking-tight">Vinklubbens Register</h1>
+                    <p className="text-[10px] md:text-xs text-[#8C7A7A] font-medium uppercase mt-0.5 md:mt-1 tracking-widest italic">
                       {filteredData.length} Viner visas • {sortConfig.key ? `Sorterat efter ${sortConfig.key}` : 'Standardordning'}
                     </p>
                   </div>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="relative flex-1 min-w-[240px]" ref={dropdownRef}>
+                {/* Sök & Filter dropdown (Mobil-anpassad flex-riktning) */}
+                <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-2 md:gap-3 mt-1 lg:mt-0">
+                  <div className="relative w-full sm:w-1/2 lg:w-auto lg:min-w-[240px]" ref={dropdownRef}>
                     <button 
                       onClick={() => setShowGrapeDropdown(!showGrapeDropdown)}
-                      className="w-full pl-10 pr-4 py-2.5 text-left text-sm border border-[#E8E2D9] rounded-xl bg-[#FAF9F6] text-[#4A3737] hover:border-[#722F37]/30 transition-all flex items-center justify-between"
+                      className="w-full pl-9 md:pl-10 pr-4 py-2 md:py-2.5 text-left text-xs md:text-sm border border-[#E8E2D9] rounded-lg md:rounded-xl bg-[#FAF9F6] text-[#4A3737] hover:border-[#722F37]/30 transition-all flex items-center justify-between"
                     >
-                      <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A69696]" size={16} />
-                      <span className="truncate">
+                      <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A69696] w-4 h-4" />
+                      <span className="truncate mr-2">
                         {selectedGrapes.length === 0 ? "Alla druvor" : `${selectedGrapes.length} druvor valda`}
                       </span>
-                      <ChevronDown size={14} className={`transition-transform ${showGrapeDropdown ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showGrapeDropdown ? 'rotate-180' : ''}`} />
                     </button>
                     
                     {showGrapeDropdown && (
-                      <div className="absolute top-full left-0 w-full mt-2 bg-white border border-[#E8E2D9] rounded-xl shadow-2xl z-[50] max-h-80 overflow-y-auto p-2">
+                      <div className="absolute top-full left-0 w-full mt-2 bg-white border border-[#E8E2D9] rounded-xl shadow-2xl z-[50] max-h-64 md:max-h-80 overflow-y-auto p-2">
                         {selectedGrapes.length > 0 && (
                           <button 
                             onClick={() => setSelectedGrapes([])}
-                            className="w-full text-left px-3 py-2 mb-2 text-xs font-bold text-[#722F37] hover:bg-[#722F37]/5 rounded-lg flex items-center justify-between"
+                            className="w-full text-left px-3 py-2 mb-2 text-[10px] md:text-xs font-bold text-[#722F37] hover:bg-[#722F37]/5 rounded-lg flex items-center justify-between"
                           >
-                            Rensa filter <X size={12} />
+                            Rensa filter <X className="w-3 h-3 md:w-4 md:h-4" />
                           </button>
                         )}
                         {allGrapes.map(grape => (
                           <div 
                             key={grape}
                             onClick={() => toggleGrape(grape)}
-                            className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer text-sm transition-colors ${selectedGrapes.includes(grape) ? 'bg-[#722F37]/10 text-[#722F37] font-semibold' : 'hover:bg-[#FAF9F6]'}`}
+                            className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer text-xs md:text-sm transition-colors ${selectedGrapes.includes(grape) ? 'bg-[#722F37]/10 text-[#722F37] font-semibold' : 'hover:bg-[#FAF9F6]'}`}
                           >
                             {grape}
-                            {selectedGrapes.includes(grape) && <Check size={14} />}
+                            {selectedGrapes.includes(grape) && <Check className="w-3 h-3 md:w-4 md:h-4" />}
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
 
-                  <div className="relative flex-1 min-w-[280px]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A69696]" size={18} />
+                  <div className="relative w-full sm:w-1/2 lg:w-auto lg:min-w-[280px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A69696] w-4 h-4" />
                     <input 
                       type="text"
-                      placeholder="Sök producent, namn eller årgång..."
-                      className="w-full pl-10 pr-4 py-2.5 text-sm border border-[#E8E2D9] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#722F37]/10 transition-all bg-[#FAF9F6] placeholder-[#A69696]"
+                      placeholder="Sök producent, namn, årgång..."
+                      className="w-full pl-9 md:pl-10 pr-4 py-2 md:py-2.5 text-xs md:text-sm border border-[#E8E2D9] rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-[#722F37]/10 transition-all bg-[#FAF9F6] placeholder-[#A69696]"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  <button onClick={fetchData} className="p-2.5 bg-white border border-[#E8E2D9] text-[#722F37] hover:bg-[#FDFCF8] rounded-xl transition-all shadow-sm shrink-0 active:scale-95">
-                    <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
-                  </button>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-[#F0EBE3] flex flex-wrap items-center gap-x-8 gap-y-4">
-                 <div className="flex items-center gap-3">
-                    <span className="text-[11px] font-bold text-[#A69696] uppercase tracking-widest">Visa Betyg:</span>
-                    <label className="flex items-center gap-2 cursor-pointer group">
-                      <div className={`w-5 h-5 rounded flex items-center justify-center border-2 transition-all ${visibleGroups.totalGrades ? 'bg-[#722F37] border-[#722F37]' : 'border-[#E8E2D9] bg-white'}`}>
+              {/* Toggles (Gemensamt & Medlemmar) */}
+              <div className="mt-3 md:mt-5 pt-3 md:pt-4 border-t border-[#F0EBE3] flex flex-wrap items-center gap-x-4 md:gap-x-8 gap-y-2 md:gap-y-4">
+                 <div className="flex items-center gap-2 md:gap-3">
+                    <span className="text-[9px] md:text-[11px] font-bold text-[#A69696] uppercase tracking-widest">Visa Betyg:</span>
+                    <label className="flex items-center gap-1.5 md:gap-2 cursor-pointer group">
+                      <div className={`w-4 h-4 md:w-5 md:h-5 rounded flex items-center justify-center border-2 transition-all ${visibleGroups.totalGrades ? 'bg-[#722F37] border-[#722F37]' : 'border-[#E8E2D9] bg-white'}`}>
                         <input 
                           type="checkbox" 
                           className="hidden"
                           checked={visibleGroups.totalGrades}
                           onChange={() => toggleGroup('totalGrades')}
                         />
-                        {visibleGroups.totalGrades && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                        {visibleGroups.totalGrades && <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full"></div>}
                       </div>
-                      <span className="text-sm font-medium text-[#4A3737] group-hover:text-[#722F37] transition-colors">Gemensamt</span>
+                      <span className="text-xs md:text-sm font-medium text-[#4A3737] group-hover:text-[#722F37] transition-colors">Gemensamt</span>
                     </label>
                  </div>
                  
-                 <div className="h-5 w-[1px] bg-[#E8E2D9] hidden md:block"></div>
+                 <div className="h-4 md:h-5 w-[1px] bg-[#E8E2D9] hidden md:block"></div>
 
-                 <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-[11px] font-bold text-[#A69696] uppercase tracking-widest">Medlemmar:</span>
+                 <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                    <span className="text-[9px] md:text-[11px] font-bold text-[#A69696] uppercase tracking-widest w-full sm:w-auto">Medlemmar:</span>
                     {Object.keys(columnGroups).filter(k => k !== 'totalGrades').map(person => (
                       <button
                         key={person}
                         onClick={() => toggleGroup(person)}
-                        className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all border ${
+                        className={`px-3 py-1 md:px-4 md:py-1.5 rounded-full text-[10px] md:text-xs font-semibold transition-all border ${
                           visibleGroups[person] 
                             ? 'bg-[#722F37] border-[#722F37] text-white shadow-md' 
                             : 'bg-white border-[#E8E2D9] text-[#8C7A7A] hover:border-[#722F37]/30 hover:text-[#722F37]'
                         }`}
                       >
-                        <span className="flex items-center gap-2 capitalize">
-                          <User size={13} />
+                        <span className="flex items-center gap-1.5 md:gap-2 capitalize">
+                          <User className="w-3 h-3 md:w-[13px] md:h-[13px]" />
                           {person === 'saeunn' ? 'Sæunn' : person}
                         </span>
                       </button>
@@ -385,36 +376,41 @@
             </div>
           </header>
 
-          <main className="max-w-[1800px] mx-auto p-6 lg:p-10">
+          {/* TABELL SEKTION (Fyller ut resterande utrymme) */}
+          <main className="flex-1 w-full max-w-[1800px] mx-auto p-2 md:p-6 lg:p-10 overflow-hidden flex flex-col">
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-40">
-                <div className="w-12 h-12 border-4 border-[#E8E2D9] border-t-[#722F37] rounded-full animate-spin mb-6"></div>
-                <p className="text-[#8C7A7A] font-medium tracking-wide italic">Hämtar källarlistan...</p>
+              <div className="flex flex-col items-center justify-center h-full">
+                <div className="w-10 h-10 md:w-12 md:h-12 border-4 border-[#E8E2D9] border-t-[#722F37] rounded-full animate-spin mb-4 md:mb-6"></div>
+                <p className="text-xs md:text-sm text-[#8C7A7A] font-medium tracking-wide italic">Hämtar källarlistan...</p>
               </div>
             ) : (
-              <div className="bg-white border border-[#E8E2D9] rounded-3xl shadow-xl overflow-hidden">
-                <div className="overflow-x-auto max-h-[calc(100vh-280px)] overflow-y-auto">
+              <div className="bg-white border border-[#E8E2D9] rounded-xl md:rounded-3xl shadow-xl flex-1 flex flex-col overflow-hidden relative">
+                {/* overflow-auto ser till att skrollningen bara sker i tabellen, inte hela sidan */}
+                <div className="flex-1 overflow-auto">
                   <table className="w-full text-left border-collapse table-auto">
-                    <thead className="sticky top-0 z-10 bg-[#FAF9F6] border-b border-[#E8E2D9]">
+                    
+                    {/* Sticky Table Header */}
+                    <thead className="sticky top-0 z-20 bg-[#FAF9F6] border-b border-[#E8E2D9] shadow-sm">
                       <tr>
-                        <th className="px-8 py-5 text-[11px] font-bold text-[#A69696] uppercase tracking-[0.2em] min-w-[140px]">Etikett</th>
+                        <th className="px-4 py-3 md:px-8 md:py-5 text-[9px] md:text-[11px] font-bold text-[#A69696] uppercase tracking-[0.2em] min-w-[80px] md:min-w-[140px]">Etikett</th>
                         {displayHeaders.map((header, i) => (
                           <th 
                             key={i} 
                             onClick={() => requestSort(header)}
-                            className="px-8 py-5 text-[11px] font-bold text-[#A69696] uppercase tracking-[0.2em] whitespace-nowrap cursor-pointer hover:text-[#722F37] transition-colors group/h"
+                            className="px-4 py-3 md:px-8 md:py-5 text-[9px] md:text-[11px] font-bold text-[#A69696] uppercase tracking-[0.2em] whitespace-nowrap cursor-pointer hover:text-[#722F37] transition-colors group/h"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 md:gap-2">
                               {header}
                               <div className="flex flex-col opacity-0 group-hover/h:opacity-100 transition-opacity">
-                                <ChevronUp size={12} className={sortConfig.key === header && sortConfig.direction === 'asc' ? 'text-[#722F37]' : 'text-[#D1C7BD]'} />
-                                <ChevronDown size={12} className={sortConfig.key === header && sortConfig.direction === 'desc' ? 'text-[#722F37]' : 'text-[#D1C7BD]'} />
+                                <ChevronUp className={`w-3 h-3 ${sortConfig.key === header && sortConfig.direction === 'asc' ? 'text-[#722F37]' : 'text-[#D1C7BD]'}`} />
+                                <ChevronDown className={`w-3 h-3 ${sortConfig.key === header && sortConfig.direction === 'desc' ? 'text-[#722F37]' : 'text-[#D1C7BD]'}`} />
                               </div>
                             </div>
                           </th>
                         ))}
                       </tr>
                     </thead>
+                    
                     <tbody className="divide-y divide-[#F0EBE3]">
                       {filteredData.length > 0 ? (
                         filteredData.map((row, rowIndex) => {
@@ -432,44 +428,49 @@
                           }
 
                           return (
-                            <tr key={rowIndex} className="hover:bg-[#FDFCF8] transition-all group relative hover:z-20">
-                              <td className="px-8 py-6">
-                                <div className="relative w-24 h-24 rounded-xl bg-white border border-[#E8E2D9] flex items-center justify-center shadow-inner overflow-visible p-1">
+                            <tr key={rowIndex} className="hover:bg-[#FDFCF8] transition-colors group relative hover:z-10">
+                              
+                              {/* Bildkolumn */}
+                              <td className="px-4 py-3 md:px-8 md:py-6">
+                                <div className="relative w-14 h-14 md:w-24 md:h-24 rounded-lg md:rounded-xl bg-white border border-[#E8E2D9] flex items-center justify-center shadow-inner overflow-visible p-1">
                                   {finalImageUrl ? (
                                     <img 
                                       src={finalImageUrl} 
                                       alt="Flaska" 
-                                      className="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out cursor-zoom-in hover:scale-[3.0] hover:z-[100] hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] hover:fixed sm:hover:absolute bg-white p-2 rounded-lg" 
+                                      className="max-w-full max-h-full object-contain transition-all duration-300 ease-in-out cursor-zoom-in hover:scale-[2.5] md:hover:scale-[3.0] hover:z-[100] hover:shadow-[0_20px_50px_rgba(0,0,0,0.15)] hover:fixed sm:hover:absolute bg-white p-1 md:p-2 rounded-lg" 
                                       loading="lazy" 
                                     />
                                   ) : (
-                                    <div className="flex flex-col items-center gap-2 opacity-20">
-                                      <Wine size={24} className="text-[#A69696]" />
-                                      <span className="text-[8px] font-bold uppercase tracking-tighter">Saknas</span>
+                                    <div className="flex flex-col items-center gap-1 md:gap-2 opacity-20">
+                                      <Wine className="w-5 h-5 md:w-6 md:h-6 text-[#A69696]" />
+                                      <span className="text-[6px] md:text-[8px] font-bold uppercase tracking-tighter">Saknas</span>
                                     </div>
                                   )}
                                 </div>
                               </td>
+
+                              {/* Övrig Data */}
                               {displayHeaders.map((header, colIndex) => {
                                 const rawVal = row[header];
                                 const headerLower = header.toLowerCase();
                                 const trimHeader = header.trim();
                                 
+                                // Systembolaget-länk formatering
                                 if (trimHeader === "#" && rawVal && !isNaN(parseInt(rawVal))) {
                                   const productCode = rawVal.trim();
                                   const finalCode = productCode.endsWith('01') ? productCode : `${productCode}01`;
                                   const sbLink = `https://www.systembolaget.se/produkt/vin/${finalCode}/`;
                                   
                                   return (
-                                    <td key={colIndex} className="px-8 py-6">
+                                    <td key={colIndex} className="px-4 py-3 md:px-8 md:py-6">
                                       <a 
                                         href={sbLink} 
                                         target="_blank" 
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#F5F2ED] text-[#722F37] font-bold text-xs rounded-lg hover:bg-[#722F37] hover:text-white transition-all group/link shadow-sm border border-[#E8E2D9]"
+                                        className="inline-flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-[#F5F2ED] text-[#722F37] font-bold text-[10px] md:text-xs rounded-md md:rounded-lg hover:bg-[#722F37] hover:text-white transition-all group/link shadow-sm border border-[#E8E2D9]"
                                       >
                                         {rawVal}
-                                        <ExternalLink size={14} className="opacity-40 group-hover/link:opacity-100" />
+                                        <ExternalLink className="w-3 h-3 md:w-[14px] md:h-[14px] opacity-40 group-hover/link:opacity-100" />
                                       </a>
                                     </td>
                                   );
@@ -481,23 +482,25 @@
 
                                 const isEmpty = !rawVal || rawVal.trim() === "" || rawVal.trim() === "0" || rawVal.trim() === "-";
                                 
+                                // Betygskolumn formatering
                                 if (isGradeColumn) {
                                   return (
-                                    <td key={colIndex} className="px-8 py-6">
+                                    <td key={colIndex} className="px-4 py-3 md:px-8 md:py-6">
                                       {isEmpty ? (
-                                        <span className="text-[10px] italic text-[#D1C7BD] font-medium uppercase tracking-widest">Ej betygsatt</span>
+                                        <span className="text-[8px] md:text-[10px] italic text-[#D1C7BD] font-medium uppercase tracking-widest whitespace-nowrap">Ej betygsatt</span>
                                       ) : (
                                         <div className="flex items-baseline gap-0.5">
-                                          <span className="font-bold text-[#722F37] text-xl">{rawVal}</span>
+                                          <span className="font-bold text-[#722F37] text-lg md:text-xl">{rawVal}</span>
                                         </div>
                                       )}
                                     </td>
                                   );
                                 }
 
+                                // Standard Text-kolumn formatering
                                 return (
-                                  <td key={colIndex} className="px-8 py-6 text-[#4A3737]">
-                                    <div className={`min-w-[150px] leading-relaxed text-sm font-medium ${trimHeader === "Sort" ? getSortStyle(rawVal) : ""}`}>
+                                  <td key={colIndex} className="px-4 py-3 md:px-8 md:py-6 text-[#4A3737]">
+                                    <div className={`min-w-[110px] md:min-w-[150px] leading-relaxed text-xs md:text-sm font-medium ${trimHeader === "Sort" ? getSortStyle(rawVal) : ""}`}>
                                       {rawVal || <span className="text-[#F0EBE3]">—</span>}
                                     </div>
                                   </td>
@@ -508,7 +511,7 @@
                         })
                       ) : (
                         <tr>
-                          <td colSpan={displayHeaders.length + 1} className="px-8 py-40 text-center text-[#A69696] italic tracking-wide">
+                          <td colSpan={displayHeaders.length + 1} className="px-4 py-20 md:py-40 text-center text-xs md:text-sm text-[#A69696] italic tracking-wide">
                             Inga viner matchade dina valda filter.
                           </td>
                         </tr>
@@ -523,7 +526,6 @@
       );
     };
 
-    // Rendera React-applikationen i "root"-elementet
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
