@@ -4,30 +4,30 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vinklubbens lilla kartotek</title>
-  
+ 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  
+ 
   <!-- React & ReactDOM -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  
+ 
   <!-- Babel -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 </head>
 <body class="bg-[#FDFCF8] m-0 p-0 overflow-hidden">
   <div id="root"></div>
-
+ 
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
-
+ 
     // --- Ikoner ---
     const IconBase = ({ size = 24, className = "", children }) => (
       <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
         {children}
       </svg>
     );
-
+ 
     const Wine = (props) => <IconBase {...props}><path d="M8 22h8"/><path d="M7 10h10"/><path d="M12 15v7"/><path d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"/></IconBase>;
     const Search = (props) => <IconBase {...props}><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></IconBase>;
     const Filter = (props) => <IconBase {...props}><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></IconBase>;
@@ -37,9 +37,9 @@
     const X = (props) => <IconBase {...props}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconBase>;
     const User = (props) => <IconBase {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></IconBase>;
     const ExternalLink = (props) => <IconBase {...props}><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></IconBase>;
-
+ 
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQv4HdPZVBMfNFSKu0g-9Zv1SneO8Msws73-fq1olVXjpFa2-9p5NXapBGMuSrLPgJ_mIf26pNkSbWT/pub?gid=0&single=true&output=csv";
-
+ 
     const App = () => {
       const [data, setData] = useState([]);
       const [loading, setLoading] = useState(false);
@@ -49,9 +49,9 @@
       const [showGrapeDropdown, setShowGrapeDropdown] = useState(false);
       const [headers, setHeaders] = useState([]);
       const dropdownRef = useRef(null);
-      
+ 
       const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
-
+ 
       const [visibleGroups, setVisibleGroups] = useState({
         totalGrades: false,
         marcus: false,
@@ -62,17 +62,17 @@
         jonas: false,
         gast: false
       });
-
+ 
       const parseCSV = (csvText) => {
         const rows = [];
         let currentRow = [];
         let currentField = '';
         let insideQuotes = false;
-
+ 
         for (let i = 0; i < csvText.length; i++) {
           const char = csvText[i];
           const nextChar = csvText[i + 1];
-
+ 
           if (char === '"') {
             if (insideQuotes && nextChar === '"') {
               currentField += '"';
@@ -95,16 +95,16 @@
             currentField += char;
           }
         }
-        
+ 
         if (currentField || currentRow.length > 0) {
           currentRow.push(currentField.trim());
           rows.push(currentRow);
         }
-
+ 
         if (rows.length === 0) return [];
         const rawHeaders = rows[0];
         setHeaders(rawHeaders);
-
+ 
         return rows.slice(1).map(row => {
           const obj = {};
           rawHeaders.forEach((header, index) => {
@@ -113,7 +113,7 @@
           return obj;
         });
       };
-
+ 
       const fetchData = async () => {
         setLoading(true);
         setError(null);
@@ -129,7 +129,7 @@
           setLoading(false);
         }
       };
-
+ 
       useEffect(() => {
         fetchData();
         const handleClickOutside = (event) => {
@@ -140,21 +140,21 @@
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
       }, []);
-
+ 
       const getCleanImageUrl = (value) => {
         if (!value || typeof value !== 'string') return null;
         let url = value.trim().replace(/^["']|["']$/g, '');
         const formulaMatch = url.match(/=IMAGE\("(.*?)"\)/i);
         if (formulaMatch) url = formulaMatch[1];
         if (!url.startsWith('http')) return null;
-
+ 
         const isKnownImageHost = /gstatic\.com|googleusercontent\.com|drive\.google\.com|images\.unsplash\.com|cloudinary\.com|imgix\.net/i.test(url);
         const hasImageExtension = /\.(jpeg|jpg|gif|png|webp|svg|avif)/i.test(url);
         const looksLikeThumbnail = url.includes('tbn:') || url.includes('images?q=');
-
+ 
         return (isKnownImageHost || hasImageExtension || looksLikeThumbnail) ? url : null;
       };
-
+ 
       const allGrapes = useMemo(() => {
         const grapesSet = new Set();
         data.forEach(row => {
@@ -172,7 +172,7 @@
         });
         return Array.from(grapesSet).sort();
       }, [data]);
-
+ 
       const columnGroups = {
         totalGrades: ["Betyg totalt", "Betyg utan mat", "Betyg med mat"],
         marcus: ["Marcus", "Marcus mat"],
@@ -183,50 +183,50 @@
         jonas: ["Jonas", "Jonas mat"],
         gast: ["Gäst", "Gäst mat", "Gäst Mat"]
       };
-
+ 
       const displayHeaders = useMemo(() => {
         return headers.filter(h => {
           const name = h.trim();
           const upperName = name.toUpperCase();
-          
+ 
           const hiddenFields = ["BILDLÄNK", "AE", "URL", "IMAGE", "BILDER", "BILD", "BOLAGSLÄNK"];
           if (hiddenFields.includes(upperName) || name === "") return false;
-          
+ 
           if (data.length > 0 && getCleanImageUrl(data[0][name])) return false;
-          
+ 
           for (const [groupKey, colList] of Object.entries(columnGroups)) {
             if (colList.includes(name)) return visibleGroups[groupKey];
           }
           return true;
         });
       }, [headers, data, visibleGroups]);
-
+ 
       const requestSort = (key) => {
         let direction = 'asc';
         if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
         setSortConfig({ key, direction });
       };
-
+ 
       const sortedData = useMemo(() => {
         let sortableData = [...data];
         if (sortConfig.key !== null) {
           sortableData.sort((a, b) => {
             const valA = a[sortConfig.key] || '';
             const valB = b[sortConfig.key] || '';
-            
-            // Konverterar med Number() istället för parseFloat() för en striktare kontroll. 
+ 
+            // Konverterar med Number() istället för parseFloat() för en striktare kontroll.
             // Detta gör att "2026-01-30" blir NaN och tvingar fram textsortering istället för att läsas som 2026.
             const numA = Number(valA.replace(',', '.'));
             const numB = Number(valB.replace(',', '.'));
-            
+ 
             const isNumA = valA !== '' && !isNaN(numA);
             const isNumB = valB !== '' && !isNaN(numB);
-
+ 
             // Om båda är faktiska siffror, sortera som siffror
             if (isNumA && isNumB) {
               return sortConfig.direction === 'asc' ? numA - numB : numB - numA;
             }
-            
+ 
             // Annars sortera som vanlig text (Vilket är perfekt för datum i format YYYY-MM-DD)
             if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
             if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
@@ -235,37 +235,37 @@
         }
         return sortableData;
       }, [data, sortConfig]);
-
+ 
       const filteredData = useMemo(() => {
         let result = sortedData;
-        
+ 
         if (searchTerm) {
           const lowerSearch = searchTerm.toLowerCase();
           result = result.filter(row => 
             Object.values(row).some(val => val.toString().toLowerCase().includes(lowerSearch))
           );
         }
-
+ 
         if (selectedGrapes.length > 0) {
           result = result.filter(row => {
             const ravaror = (row["Råvaror"] || "").toLowerCase();
             return selectedGrapes.some(grape => ravaror.includes(grape.toLowerCase()));
           });
         }
-
+ 
         return result;
       }, [sortedData, searchTerm, selectedGrapes]);
-
+ 
       const toggleGrape = (grape) => {
         setSelectedGrapes(prev => 
           prev.includes(grape) ? prev.filter(g => g !== grape) : [...prev, grape]
         );
       };
-
+ 
       const toggleGroup = (group) => {
         setVisibleGroups(prev => ({ ...prev, [group]: !prev[group] }));
       };
-
+ 
       const getSortStyle = (sort) => {
         const val = (sort || "").toLowerCase();
         if (val.includes("rött")) return "text-[#722F37] bg-[#722F37]/5 px-2 py-0.5 rounded";
@@ -275,14 +275,14 @@
         if (val.includes("rosé") || val.includes("rose")) return "text-[#D65D7A] bg-[#D65D7A]/5 px-2 py-0.5 rounded";
         return "";
       };
-
+ 
       return (
         <div className="h-screen h-[100dvh] bg-[#FDFCF8] text-[#2D2424] font-serif flex flex-col overflow-hidden">
           {/* HEADER SEKTION */}
           <header className="shrink-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#E8E2D9] shadow-sm">
             <div className="max-w-[1800px] mx-auto px-4 md:px-6 py-3 md:py-4">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 md:gap-6">
-                
+ 
                 {/* Titel & Ikon */}
                 <div className="flex items-center gap-3 md:gap-4">
                   <div className="bg-[#722F37] p-2 md:p-3 rounded-full shadow-lg shrink-0">
@@ -295,7 +295,7 @@
                     </p>
                   </div>
                 </div>
-                
+ 
                 {/* Sök & Filter dropdown */}
                 <div className="flex flex-col sm:flex-row w-full lg:w-auto gap-2 md:gap-3 mt-1 lg:mt-0">
                   <div className="relative w-full sm:w-1/2 lg:w-auto lg:min-w-[240px]" ref={dropdownRef}>
@@ -309,7 +309,7 @@
                       </span>
                       <ChevronDown className={`w-4 h-4 transition-transform ${showGrapeDropdown ? 'rotate-180' : ''}`} />
                     </button>
-                    
+ 
                     {showGrapeDropdown && (
                       <div className="absolute top-full left-0 w-full mt-2 bg-white border border-[#E8E2D9] rounded-xl shadow-2xl z-[50] max-h-64 md:max-h-80 overflow-y-auto p-2">
                         {selectedGrapes.length > 0 && (
@@ -333,7 +333,7 @@
                       </div>
                     )}
                   </div>
-
+ 
                   <div className="relative w-full sm:w-1/2 lg:w-auto lg:min-w-[280px]">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A69696] w-4 h-4" />
                     <input 
@@ -346,7 +346,7 @@
                   </div>
                 </div>
               </div>
-
+ 
               {/* Toggles (Gemensamt & Medlemmar) */}
               <div className="mt-3 md:mt-5 pt-3 md:pt-4 border-t border-[#F0EBE3] flex flex-wrap items-center gap-x-4 md:gap-x-8 gap-y-2 md:gap-y-4">
                  <div className="flex items-center gap-2 md:gap-3">
@@ -364,9 +364,9 @@
                       <span className="text-xs md:text-sm font-medium text-[#4A3737] group-hover:text-[#722F37] transition-colors">Gemensamt</span>
                     </label>
                  </div>
-                 
+ 
                  <div className="h-4 md:h-5 w-[1px] bg-[#E8E2D9] hidden md:block"></div>
-
+ 
                  <div className="flex flex-wrap items-center gap-2 md:gap-3">
                     <span className="text-[9px] md:text-[11px] font-bold text-[#A69696] uppercase tracking-widest w-full sm:w-auto">Medlemmar:</span>
                     {Object.keys(columnGroups).filter(k => k !== 'totalGrades').map(person => (
@@ -389,7 +389,7 @@
               </div>
             </div>
           </header>
-
+ 
           {/* TABELL SEKTION */}
           <main className="flex-1 w-full max-w-[1800px] mx-auto p-2 md:p-6 lg:p-10 overflow-hidden flex flex-col">
             {loading ? (
@@ -399,9 +399,10 @@
               </div>
             ) : (
               <div className="bg-white border border-[#E8E2D9] rounded-xl md:rounded-3xl shadow-xl flex-1 flex flex-col overflow-hidden relative">
+                {/* overflow-auto ser till att skrollningen bara sker i tabellen, inte hela sidan */}
                 <div className="flex-1 overflow-auto">
                   <table className="w-full text-left border-collapse table-auto">
-                    
+ 
                     {/* Sticky Table Header */}
                     <thead className="sticky top-0 z-20 bg-[#FAF9F6] border-b border-[#E8E2D9] shadow-sm">
                       <tr>
@@ -423,7 +424,7 @@
                         ))}
                       </tr>
                     </thead>
-                    
+ 
                     <tbody className="divide-y divide-[#F0EBE3]">
                       {filteredData.length > 0 ? (
                         filteredData.map((row, rowIndex) => {
@@ -439,10 +440,10 @@
                               if (url) { finalImageUrl = url; break; }
                             }
                           }
-
+ 
                           return (
                             <tr key={rowIndex} className="hover:bg-[#FDFCF8] transition-colors group relative hover:z-10">
-                              
+ 
                               {/* Bildkolumn */}
                               <td className="px-4 py-3 md:px-8 md:py-6">
                                 <div className="relative w-14 h-14 md:w-24 md:h-24 rounded-lg md:rounded-xl bg-white border border-[#E8E2D9] flex items-center justify-center shadow-inner overflow-visible p-1">
@@ -461,19 +462,19 @@
                                   )}
                                 </div>
                               </td>
-
+ 
                               {/* Övrig Data */}
                               {displayHeaders.map((header, colIndex) => {
                                 const rawVal = row[header];
                                 const headerLower = header.toLowerCase();
                                 const trimHeader = header.trim();
-                                
+ 
                                 // Systembolaget-länk formatering
                                 if (trimHeader === "#" && rawVal && !isNaN(parseInt(rawVal))) {
                                   const productCode = rawVal.trim();
                                   const finalCode = productCode.endsWith('01') ? productCode : `${productCode}01`;
                                   const sbLink = `https://www.systembolaget.se/produkt/vin/${finalCode}/`;
-                                  
+ 
                                   return (
                                     <td key={colIndex} className="px-4 py-3 md:px-8 md:py-6">
                                       <a 
@@ -488,13 +489,13 @@
                                     </td>
                                   );
                                 }
-
+ 
                                 const isGradeColumn = headerLower.includes('betyg') || 
                                                       headerLower.includes('mat') || 
                                                       Object.values(columnGroups).some(cols => cols.includes(trimHeader));
-
+ 
                                 const isEmpty = !rawVal || rawVal.trim() === "" || rawVal.trim() === "0" || rawVal.trim() === "-";
-                                
+ 
                                 // Betygskolumn formatering
                                 if (isGradeColumn) {
                                   return (
@@ -509,7 +510,7 @@
                                     </td>
                                   );
                                 }
-
+ 
                                 // Standard Text-kolumn formatering
                                 return (
                                   <td key={colIndex} className="px-4 py-3 md:px-8 md:py-6 text-[#4A3737]">
@@ -538,7 +539,7 @@
         </div>
       );
     };
-
+ 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
